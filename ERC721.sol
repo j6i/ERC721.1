@@ -243,33 +243,30 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     }
 
     /**
-     * @dev Safely mints `tokenId` and transfers it to `to`.
+     * @dev Safely mints and transfers it to `to`.
      *
      * Requirements:
      *
-     * - `tokenId` must not exist.
+     * - there is supply.
      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
      *
      * Emits a {Transfer} event.
      */
-    function _safeMint(address to, uint256 tokenId) public virtual {
-        _safeMint(to, tokenId, "");
+    function _safeMint(address to) internal virtual returns (uint256) {
+        return _safeMint(to, "");
     }
 
     /**
      * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
      * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
      */
-    function _safeMint(
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) internal virtual {
-        _mint(to);
+    function _safeMint(address to, bytes memory _data) internal virtual returns (uint256) {
+        uint256 tokenId = _mint(to);
         require(
-            _checkOnERC721Received(0x0000000000000000000000000000000000000000, to, tokenId, _data),
+            _checkOnERC721Received(address(0), to, tokenId, _data),
             "ERC721: transfer to non ERC721Receiver implementer"
         );
+        return tokenId;
     }
 
     /**
